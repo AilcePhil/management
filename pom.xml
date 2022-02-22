@@ -11,6 +11,8 @@
     <modules>
         <module>eureka</module>
         <module>modules</module>
+        <module>security</module>
+        <module>common</module>
     </modules>
 
     <properties>
@@ -38,6 +40,9 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+    <dependencies>
+
+    </dependencies>
 
 
     <build>
