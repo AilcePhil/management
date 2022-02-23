@@ -1,7 +1,6 @@
 server:
   port: 8010
-  servlet:
-    context-path: /mod
+
 #设置服务的名称
 spring:
   application:

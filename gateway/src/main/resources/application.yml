@@ -11,10 +11,14 @@ spring:
         - id: modules
           uri: http://localhost:8010
           predicates:
-            - Path=/mod/**
+            - Path=/**
 
 
 eureka:
   client:
+    register-with-eureka: true
+    fetch-registry: true
     serviceUrl:
       defaultZone: http://101.35.52.122:8000/eureka/
+
+

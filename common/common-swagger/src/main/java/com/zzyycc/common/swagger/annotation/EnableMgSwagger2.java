@@ -1,10 +1,9 @@
 package com.zzyycc.common.swagger.annotation;
 
-import com.zzyycc.common.swagger.config.GatewaySwaggerAutoConfiguration;
-import com.zzyycc.common.swagger.config.SwaggerAutoConfiguration;
+import com.zzyycc.common.swagger.config.SwaggerConfig;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import springfox.documentation.swagger2.annotations.EnableSwagger2;
+import springfox.documentation.oas.annotations.EnableOpenApi;
 
 import java.lang.annotation.*;
 
@@ -19,8 +18,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@EnableSwagger2
+@EnableOpenApi
 @EnableWebMvc
-@Import({ SwaggerAutoConfiguration.class, GatewaySwaggerAutoConfiguration.class })
+@Import({ SwaggerConfig.class})
 public @interface EnableMgSwagger2 {
 }

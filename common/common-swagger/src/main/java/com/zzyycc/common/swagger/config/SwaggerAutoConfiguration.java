@@ -8,11 +8,8 @@ import org.springframework.boot.actuate.endpoint.web.*;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -38,9 +35,9 @@ import java.util.function.Predicate;
  *   表示在开发或测试环境开启，而在生产关闭。（推荐使用） 禁用方法2：使用注解@ConditionalOnProperty(name = "swagger.enable",
  *   havingValue = "true") 然后在测试配置或者开发配置中添加swagger.enable=true即可开启，生产环境不填则默认关闭Swagger.
  */
-@Configuration
-@EnableAutoConfiguration
-@ConditionalOnProperty(name = "swagger.enabled", matchIfMissing = true)
+//@Configuration
+//@EnableAutoConfiguration
+//@ConditionalOnProperty(name = "swagger.enabled", matchIfMissing = true)
 public class SwaggerAutoConfiguration {
 
     /**
