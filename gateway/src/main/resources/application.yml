@@ -1,0 +1,20 @@
+server:
+  port: 9999
+
+spring:
+  application:
+    name: gateway
+  cloud:
+    gateway:
+      routes:
+        # 把路径带mod的路由到8010
+        - id: modules
+          uri: http://localhost:8010
+          predicates:
+            - Path=/mod/**
+
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://101.35.52.122:8000/eureka/

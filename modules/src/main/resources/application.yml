@@ -1,5 +1,7 @@
 server:
   port: 8010
+  servlet:
+    context-path: /mod
 #设置服务的名称
 spring:
   application:
@@ -10,6 +12,9 @@ spring:
     username: root
     password: 199682
     driver-class-name: com.mysql.cj.jdbc.Driver
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 #往eureka_service端注册的地址
 eureka:
   client:

@@ -1,17 +1,15 @@
-package com.zzyycc.modules;
+package com.zzyycc.gateway;
 
-import com.zzyycc.common.swagger.annotation.EnableMgSwagger2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 
 @SpringBootApplication
 @EnableEurekaClient
-@EnableMgSwagger2
-public class ModulesApplication {
+public class GatewayApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(ModulesApplication.class, args);
+        SpringApplication.run(GatewayApplication.class, args);
     }
 
 }
