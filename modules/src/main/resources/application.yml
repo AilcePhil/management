@@ -1,5 +1,7 @@
 server:
   port: 8010
+  servlet:
+    context-path: /mod
 
 #设置服务的名称
 spring:
@@ -16,6 +18,8 @@ spring:
       matching-strategy: ant_path_matcher
 #往eureka_service端注册的地址
 eureka:
+  instance:
+    appname: modules
   client:
     serviceUrl:
       defaultZone: http://101.35.52.122:8000/eureka/
