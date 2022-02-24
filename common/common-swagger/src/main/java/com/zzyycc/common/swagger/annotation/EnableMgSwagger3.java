@@ -2,6 +2,7 @@ package com.zzyycc.common.swagger.annotation;
 
 import com.zzyycc.common.swagger.config.SwaggerConfig;
 import org.springframework.context.annotation.Import;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 
 import java.lang.annotation.*;
@@ -18,6 +19,7 @@ import java.lang.annotation.*;
 @Documented
 @Inherited
 @EnableOpenApi
+@EnableWebMvc
 @Import({ SwaggerConfig.class})
 public @interface EnableMgSwagger3 {
 }
