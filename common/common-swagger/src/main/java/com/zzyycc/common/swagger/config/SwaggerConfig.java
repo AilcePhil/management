@@ -1,6 +1,7 @@
 package com.zzyycc.common.swagger.config;
 
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
@@ -65,8 +66,15 @@ public class SwaggerConfig {
                 .paths(PathSelectors.regex("/.*/error").negate())
                 .paths(PathSelectors.regex("/.*/actuator/health.*").negate())
                 .paths(PathSelectors.regex("/.*/actuator").negate())
+                .paths((s) -> {
+                    for(String path : DEFAULT_EXCLUDE_PATH) {
+                        if(StringUtils.startsWith(s, path)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                })
                 .build();
-
     }
 
     private ApiInfo apiInfo() {
