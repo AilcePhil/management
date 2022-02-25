@@ -9,10 +9,11 @@ spring:
     name: modules
 
   datasource:
-    url: jdbc:mysql://localhost:3306/game?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/game?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true
     username: root
     password: 199682
     driver-class-name: com.mysql.cj.jdbc.Driver
+# 解决swagger3和springboot2.6.x路径解析问题
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
-import com.baomidou.mybatisplus.generator.config.TemplateType;
 import com.baomidou.mybatisplus.generator.config.converts.MySqlTypeConvert;
 import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
@@ -13,6 +12,7 @@ import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
 import com.zzyycc.modules.generator.dto.MgGeneratorCodeDTO;
 import com.zzyycc.modules.generator.service.GeneratorService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -25,19 +25,22 @@ import org.springframework.stereotype.Component;
 @Component
 public class GeneratorServiceImpl implements GeneratorService {
 
+    @Value("${spring.datasource.username}")
+    private String username;
+    @Value("${spring.datasource.password}")
+    private String password;
+    @Value("${spring.datasource.url}")
+    private String url;
 
     @Override
     public void generatorCode(MgGeneratorCodeDTO dto) {
-
         createDataSource(dto).execute();
-
     }
 
 
     private FastAutoGenerator createDataSource(MgGeneratorCodeDTO dto) {
-        dto.setDatabaseName("game");
         return FastAutoGenerator.create(
-                new DataSourceConfig.Builder("jdbc:mysql://localhost:3306/" + dto.getDatabaseName(), "root", "123456")
+                new DataSourceConfig.Builder(url, username, password)
                         .typeConvert(new MySqlTypeConvert()).keyWordsHandler(new MySqlKeyWordsHandler()))
                 .globalConfig(builder -> builder
                         .fileOverride()
@@ -47,7 +50,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                         .build())
                 .packageConfig(builder -> builder
                         .parent(StringUtils.isNotEmpty(dto.getParent()) ? dto.getParent() : "com.zzyycc")
-                        .moduleName(StringUtils.isNotEmpty(dto.getModuleName()) ? dto.getModuleName() : "example")
+                        .moduleName(StringUtils.isNotEmpty(dto.getModuleName()) ? dto.getModuleName() : "")
                         .entity("entity")
                         .service("service")
                         .serviceImpl("service.impl")
@@ -57,13 +60,14 @@ public class GeneratorServiceImpl implements GeneratorService {
                         .other("other")
                         .build())
                 .templateConfig(builder -> builder
-                        .disable(TemplateType.ENTITY)
-                        .entity("/templates/entity.java")
-                        .service("/templates/service.java")
-                        .serviceImpl("/templates/serviceImpl.java")
-                        .mapper("/templates/mapper.java")
-                        .mapperXml("/templates/mapper.xml")
-                        .controller("/templates/controller.java")
+                        // 禁用所用模板，启用自己的配置模板
+                        .disable()
+                        .entity("/templates/myEntity.java")
+                        .service("/templates/myService.java")
+                        .serviceImpl("/templates/myServiceImpl.java")
+                        .mapper("/templates/myMapper.java")
+                        .mapperXml("/templates/myMapper.xml")
+                        .controller("/templates/myController.java")
                         .build())
                 .strategyConfig(builder -> builder
                         .enableSkipView()
@@ -72,7 +76,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                         .entityBuilder().enableActiveRecord()
                         .enableColumnConstant()
                         .enableRemoveIsPrefix()
-                        .enableTableFieldAnnotation()
+                        //.enableTableFieldAnnotation()
                         .naming(NamingStrategy.underline_to_camel)
                         // controller配置
                         .controllerBuilder().enableRestStyle()
@@ -82,12 +86,5 @@ public class GeneratorServiceImpl implements GeneratorService {
                         .mapperBuilder().superClass(BaseMapper.class).enableMapperAnnotation().enableBaseResultMap()
                         .enableBaseColumnList()
                 .build());
-
-
-
-
-
-
-
     }
 }
