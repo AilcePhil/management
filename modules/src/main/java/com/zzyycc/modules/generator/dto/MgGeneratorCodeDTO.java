@@ -1,7 +1,9 @@
 package com.zzyycc.modules.generator.dto;
 
 import io.swagger.annotations.ApiModelProperty;
+
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author zhuyuechao
@@ -16,8 +18,8 @@ public class MgGeneratorCodeDTO implements Serializable {
     @ApiModelProperty(value = "数据库名称")
     private String databaseName;
 
-    @ApiModelProperty(name = "表名")
-    private String tableName;
+    @ApiModelProperty(name = "表名列表")
+    private List<String> tableNameList;
 
 
     @ApiModelProperty(name = "作者名")
@@ -61,11 +63,22 @@ public class MgGeneratorCodeDTO implements Serializable {
         this.databaseName = databaseName;
     }
 
-    public String getTableName() {
-        return tableName;
+    public List<String> getTableNameList() {
+        return tableNameList;
     }
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public void setTableNameList(List<String> tableNameList) {
+        this.tableNameList = tableNameList;
+    }
+
+    @Override
+    public String toString() {
+        return "MgGeneratorCodeDTO{" +
+                "databaseName='" + databaseName + '\'' +
+                ", tableNameList=" + tableNameList +
+                ", author='" + author + '\'' +
+                ", parent='" + parent + '\'' +
+                ", moduleName='" + moduleName + '\'' +
+                '}';
     }
 }

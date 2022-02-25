@@ -15,7 +15,15 @@ public interface GeneratorService {
      * 生成代码
      *
      * @date 2022/2/22 14:26
-     * @param dto
+     * @param dto 入参
      */
     void generatorCode(MgGeneratorCodeDTO dto);
+
+    /**
+     * 下载代码
+     *
+     * @date 2022/2/25 14:23
+     */
+    void downloadCode();
+
 }

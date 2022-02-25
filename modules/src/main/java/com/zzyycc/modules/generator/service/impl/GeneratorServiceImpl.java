@@ -34,16 +34,27 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     @Override
     public void generatorCode(MgGeneratorCodeDTO dto) {
-        createDataSource(dto).execute();
+        fastAutoGenerator(dto).execute();
+    }
+
+    @Override
+    public void downloadCode() {
+
     }
 
 
-    private FastAutoGenerator createDataSource(MgGeneratorCodeDTO dto) {
+    private String getSystemPath() {
+        return System.getProperty("os.name").toLowerCase().contains("windows") ? "D://AutoGenerator" : "/tmp/AutoGenerator";
+    }
+
+
+    private FastAutoGenerator fastAutoGenerator(MgGeneratorCodeDTO dto) {
         return FastAutoGenerator.create(
                 new DataSourceConfig.Builder(url, username, password)
                         .typeConvert(new MySqlTypeConvert()).keyWordsHandler(new MySqlKeyWordsHandler()))
                 .globalConfig(builder -> builder
                         .fileOverride()
+                        .outputDir(getSystemPath())
                         .author(StringUtils.isNotEmpty(dto.getAuthor()) ? dto.getAuthor() : "zyc")
                         .enableSwagger()
                         .dateType(DateType.TIME_PACK).commentDate("yyyy-MM-dd HH:mm:ss")
@@ -71,6 +82,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                         .build())
                 .strategyConfig(builder -> builder
                         .enableSkipView()
+                        .addInclude()
                         .build()
                         // entity配置
                         .entityBuilder().enableActiveRecord()

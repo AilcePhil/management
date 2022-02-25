@@ -11,6 +11,7 @@
         <module name="modules" />
         <module name="eureka" />
         <module name="gateway" />
+        <module name="common-core" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -23,6 +24,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="common" options="" />
+      <module name="common-core" options="-parameters" />
       <module name="common-swagger" options="-parameters" />
       <module name="e" options="-parameters" />
       <module name="eureka" options="-parameters" />
