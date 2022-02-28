@@ -2,6 +2,8 @@ package com.zzyycc.modules.generator.service;
 
 import com.zzyycc.modules.generator.dto.MgGeneratorCodeDTO;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author zhuyuechao
  * @version 1.0.0
@@ -24,6 +26,6 @@ public interface GeneratorService {
      *
      * @date 2022/2/25 14:23
      */
-    void downloadCode();
+    void downloadCode(MgGeneratorCodeDTO dto, HttpServletResponse response);
 
 }

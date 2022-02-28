@@ -8,6 +8,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * @author zhuyuechao
  * @version 1.0.0
@@ -33,12 +35,14 @@ public class GeneratorController {
         return ResponseData.success();
     }
 
-    @ApiOperation(value = "代码生成")
+    @ApiOperation(value = "下载生成")
     @GetMapping("/download/code")
-    public ResponseData<Void> downloadCode() {
-        generatorService.downloadCode();
+    public ResponseData<Void> downloadCode(@RequestBody MgGeneratorCodeDTO dto, HttpServletResponse response) {
+        generatorService.downloadCode(dto, response);
         return ResponseData.success();
     }
+
+
 
 
 }
