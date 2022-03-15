@@ -1,5 +1,9 @@
 package com.zzyycc.modules.utils;
 
+import com.zzyycc.common.core.exception.MgException;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -14,60 +18,131 @@ import java.util.zip.ZipOutputStream;
 public class ZipUtil {
 
     /**
-     * zip文件压缩
-     * @param inputFile 待压缩文件夹/文件名
-     * @param outputFile 生成的压缩包名字
+     * 向网页端输出zip包
+     *
+     * @param response servlet响应
+     * @param sourceFile 源文件
+     * @date 2022/3/1 9:51
      */
-
-    public static void ZipCompress(String inputFile, String outputFile) throws Exception {
-        //创建zip输出流
-        ZipOutputStream out = new ZipOutputStream(new FileOutputStream(outputFile));
-        //创建缓冲输出流
-        BufferedOutputStream bos = new BufferedOutputStream(out);
-        File input = new File(inputFile);
-        compress(out, bos, input,null);
-        bos.close();
-        out.close();
-    }
-    /**
-     * @param name 压缩文件名，可以写为null保持默认
-     * 递归压缩
-     */
-    public static void compress(ZipOutputStream out, BufferedOutputStream bos, File input, String name) throws IOException {
-
-        if (name == null) {
-            name = input.getName();
+    public static void toZip(HttpServletResponse response, File sourceFile) {
+        if (null == sourceFile) {
+            throw new MgException("文件不存在，请重试！");
         }
-        //如果路径为目录（文件夹）
-        if (input.isDirectory()) {
-            //取出文件夹中的文件（或子文件夹）
-            File[] flist = input.listFiles();
+        ZipOutputStream zipOutputStream = null;
+        BufferedOutputStream bufferedOut = null;
+        try {
+            String headerType = "Content-disposition";
+            String fileName = "autoGenerator" + ".zip";
+            response.setContentType("application/octet-stream");
+            response.setHeader("Access-Control-Expose-Headers", headerType);
+            // 表示不能用浏览器直接打开
+            response.setHeader("Connection", "close");
+            // 告诉客户端允许断点续传多线程连接下载
+            response.setHeader("Accept-Ranges", "bytes");
+            response.setCharacterEncoding("UTF-8");
+            response.setHeader(headerType, "attachment; filename=\"" + fileName + "\"");
 
-            //如果文件夹为空，则只需在目的地zip文件中写入一个目录进入
-            if (flist.length == 0)
-            {
-                out.putNextEntry(new ZipEntry(name + "/"));
-            } else//如果文件夹不为空，则递归调用compress，文件夹中的每一个文件（或文件夹）进行压缩
-            {
-                for (int i = 0; i < flist.length; i++) {
-                    compress(out, bos, flist[i], name + "/" + flist[i].getName());
+            // 创建zip输出流和缓冲流
+            zipOutputStream = new ZipOutputStream(response.getOutputStream());
+            bufferedOut = new BufferedOutputStream(zipOutputStream);
+            compress(zipOutputStream, bufferedOut, sourceFile, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭流
+            try {
+                if (null != zipOutputStream) {
+                    zipOutputStream.closeEntry();
+                    zipOutputStream.close();
+                }
+                if (null != bufferedOut) {
+                    bufferedOut.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 向本地磁盘输出zip包
+     *
+     * @param path 输出的本地路径
+     * @param sourceFile 源文件
+     * @date 2022/3/1 9:51
+     */
+    public static void toZip(String path, File sourceFile) {
+        if (null == sourceFile) {
+            throw new MgException("文件不存在，请重试！");
+        }
+        if (StringUtils.isEmpty(path)) {
+            throw new MgException("输出路径不能为空！");
+        }
+
+        ZipOutputStream zipOutputStream = null;
+        BufferedOutputStream bufferedOut = null;
+        try {
+            // 创建zip输出流和缓冲流
+            zipOutputStream = new ZipOutputStream(new FileOutputStream(path));
+            bufferedOut = new BufferedOutputStream(zipOutputStream);
+            compress(zipOutputStream, bufferedOut, sourceFile, null);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭流
+            try {
+                if (null != zipOutputStream) {
+                    zipOutputStream.closeEntry();
+                    zipOutputStream.close();
+                }
+                if (null != bufferedOut) {
+                    bufferedOut.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 递归压缩文件
+     *
+     * @param zipOut 压缩流
+     * @param bufferedOut 缓冲流
+     * @param sourceFile 源文件
+     * @param name 名称
+     * @throws IOException io异常
+     */
+    private static void compress(ZipOutputStream zipOut, BufferedOutputStream bufferedOut, File sourceFile, String name) throws IOException {
+        if (StringUtils.isEmpty(name)) {
+            name = sourceFile.getName();
+        }
+        // 如果是文件
+        if (sourceFile.isFile()) {
+            zipOut.putNextEntry(new ZipEntry(name));
+            FileInputStream fileInputStream = new FileInputStream(sourceFile);
+            //将源文件写入到zip文件中
+            int len;
+            byte[] bytes = new byte[2048];
+            while ((len = fileInputStream.read(bytes)) != -1) {
+                bufferedOut.write(bytes, 0, len);
+            }
+            // 需要刷新关闭流
+            bufferedOut.flush();
+            zipOut.closeEntry();
+            fileInputStream.close();
+        } else {
+            // 如果是文件夹，递归压缩
+            File[] files = sourceFile.listFiles();
+            // 如果为空，只输出文件夹，不为空是名称需要带上上级目录+/，不然会全部生成在一个目录下
+            if (null == files) {
+                zipOut.putNextEntry(new ZipEntry(name + "/"));
+            } else {
+                for (File file : files) {
+                    compress(zipOut, bufferedOut, file, name + "/" + file.getName());
                 }
             }
-        } else//如果不是目录（文件夹），即为文件，则先写入目录进入点，之后将文件写入zip文件中
-        {
-            out.putNextEntry(new ZipEntry(name));
-            FileInputStream fos = new FileInputStream(input);
-            BufferedInputStream bis = new BufferedInputStream(fos);
-            int len=-1;
-            //将源文件写入到zip文件中
-            byte[] buf = new byte[1024];
-            while ((len = bis.read(buf)) != -1) {
-                bos.write(buf,0,len);
-            }
-            bis.close();
-            fos.close();
         }
     }
-
 }
 

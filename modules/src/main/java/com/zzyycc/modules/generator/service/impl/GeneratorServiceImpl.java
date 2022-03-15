@@ -12,14 +12,14 @@ import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
 import com.zzyycc.modules.generator.dto.MgGeneratorCodeDTO;
 import com.zzyycc.modules.generator.service.GeneratorService;
+import com.zzyycc.modules.utils.ZipUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.zip.ZipOutputStream;
+import java.io.File;
 
 /**
  * @author zhuyuechao
@@ -55,24 +55,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         this.generatorCode(dto);
         // 读取文件
         String path = this.getSystemPath();
-
-        String headerType = "Content-disposition";
-        String fileName = "code" + ".zip";
-        response.setContentType("application/vnd.ms-excel;charset=UTF-8");
-        response.setHeader("Access-Control-Expose-Headers", headerType);
-        response.setContentType("application/octet-stream");
-        // 表示不能用浏览器直接打开
-        response.setHeader("Connection", "close");
-        // 告诉客户端允许断点续传多线程连接下载
-        response.setHeader("Accept-Ranges", "bytes");
-        response.setCharacterEncoding("UTF-8");
-        response.setHeader(headerType, "attachment; filename=\"" + fileName + "\"");
-        try {
-            ZipOutputStream zipOutputStream = new ZipOutputStream(response.getOutputStream());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        ZipUtil.toZip(response, new File(path));
     }
 
 
@@ -80,13 +63,13 @@ public class GeneratorServiceImpl implements GeneratorService {
         return System.getProperty("os.name").toLowerCase().contains("windows") ? "D://AutoGenerator" : "/tmp/AutoGenerator";
     }
 
-
     private FastAutoGenerator fastAutoGenerator(MgGeneratorCodeDTO dto) {
         return FastAutoGenerator.create(
                 new DataSourceConfig.Builder(url, username, password)
                         .typeConvert(new MySqlTypeConvert()).keyWordsHandler(new MySqlKeyWordsHandler()))
                 .globalConfig(builder -> builder
                         .fileOverride()
+                        .disableOpenDir()
                         .outputDir(getSystemPath())
                         .author(StringUtils.isNotEmpty(dto.getAuthor()) ? dto.getAuthor() : "zyc")
                         .enableSwagger()
@@ -110,7 +93,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                         .service("/templates/myService.java")
                         .serviceImpl("/templates/myServiceImpl.java")
                         .mapper("/templates/myMapper.java")
-                        .mapperXml("/templates/myMapper.xml")
+                        .xml("/templates/myMapper.xml")
                         .controller("/templates/myController.java")
                         .build())
                 .strategyConfig(builder -> builder

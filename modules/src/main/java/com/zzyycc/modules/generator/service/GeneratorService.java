@@ -24,6 +24,8 @@ public interface GeneratorService {
     /**
      * 下载代码
      *
+     * @param dto 入参
+     * @param response 响应
      * @date 2022/2/25 14:23
      */
     void downloadCode(MgGeneratorCodeDTO dto, HttpServletResponse response);

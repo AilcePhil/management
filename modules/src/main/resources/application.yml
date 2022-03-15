@@ -1,7 +1,7 @@
 server:
   port: 8010
   servlet:
-    context-path: /mod
+    context-path: /modules
 
 #设置服务的名称
 spring:
@@ -50,6 +50,12 @@ eureka:
   client:
     serviceUrl:
       defaultZone: http://101.35.52.122:8000/eureka/
+
+logging:
+  level:
+    org.apache.ibatis: debug
+    com.netflix.discovery: info
+
 
 
 

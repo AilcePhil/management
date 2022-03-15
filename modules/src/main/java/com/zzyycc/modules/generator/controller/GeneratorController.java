@@ -6,7 +6,10 @@ import com.zzyycc.modules.generator.dto.MgGeneratorCodeDTO;
 import com.zzyycc.modules.generator.service.GeneratorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,7 +39,7 @@ public class GeneratorController {
     }
 
     @ApiOperation(value = "下载生成")
-    @GetMapping("/download/code")
+    @PostMapping("/download/code")
     public ResponseData<Void> downloadCode(@RequestBody MgGeneratorCodeDTO dto, HttpServletResponse response) {
         generatorService.downloadCode(dto, response);
         return ResponseData.success();

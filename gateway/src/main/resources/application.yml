@@ -11,7 +11,7 @@ spring:
         - id: modules
           uri: http://localhost:8010
           predicates:
-            - Path=/mod/**
+            - Path=/modules/**
 
 
 eureka:
