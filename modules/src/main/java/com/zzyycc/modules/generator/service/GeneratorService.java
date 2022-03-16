@@ -1,6 +1,8 @@
 package com.zzyycc.modules.generator.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zzyycc.modules.generator.dto.MgGeneratorCodeDTO;
+import com.zzyycc.modules.generator.dto.MgTablesDTO;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -30,4 +32,11 @@ public interface GeneratorService {
      */
     void downloadCode(MgGeneratorCodeDTO dto, HttpServletResponse response);
 
+    /**
+     * 分页查询表信息
+     * @param page 分页
+     * @param dto 入参
+     * @return MgTablesDTO
+     */
+    Page<MgTablesDTO> tables(Page page, MgTablesDTO dto);
 }

@@ -1,8 +1,10 @@
 package com.zzyycc.modules.generator.controller;
 
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zzyycc.common.core.utils.ResponseData;
 import com.zzyycc.modules.generator.dto.MgGeneratorCodeDTO;
+import com.zzyycc.modules.generator.dto.MgTablesDTO;
 import com.zzyycc.modules.generator.service.GeneratorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,7 +48,12 @@ public class GeneratorController {
     }
 
 
+    @ApiOperation(value = "获取表相关信息")
+    @PostMapping("/tables")
+    public ResponseData<Page<MgTablesDTO>> tables(Page page, MgTablesDTO dto) {
 
+        return ResponseData.success(generatorService.tables(page, dto));
+    }
 
 
 

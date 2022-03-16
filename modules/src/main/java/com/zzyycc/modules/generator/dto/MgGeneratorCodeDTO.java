@@ -15,6 +15,15 @@ import java.util.List;
 public class MgGeneratorCodeDTO implements Serializable {
     private static final long serialVersionUID = 2819433445126313250L;
 
+    @ApiModelProperty(value = "链接路径")
+    private String url;
+
+    @ApiModelProperty(value = "用户名")
+    private String username;
+
+    @ApiModelProperty(value = "密码")
+    private String password;
+
     @ApiModelProperty(value = "数据库名称")
     private String databaseName;
 
@@ -30,6 +39,30 @@ public class MgGeneratorCodeDTO implements Serializable {
 
     @ApiModelProperty(name = "模块名")
     private String moduleName;
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getParent() {
         return parent;

@@ -7,6 +7,9 @@ server:
 spring:
   application:
     name: modules
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
 
   datasource:
     url: jdbc:mysql://101.35.52.122:3306/management?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8

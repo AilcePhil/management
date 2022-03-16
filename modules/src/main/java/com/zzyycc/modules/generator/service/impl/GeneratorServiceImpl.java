@@ -1,6 +1,7 @@
 package com.zzyycc.modules.generator.service.impl;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
@@ -11,15 +12,20 @@ import com.baomidou.mybatisplus.generator.config.rules.DateType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import com.baomidou.mybatisplus.generator.keywords.MySqlKeyWordsHandler;
 import com.zzyycc.modules.generator.dto.MgGeneratorCodeDTO;
+import com.zzyycc.modules.generator.dto.MgTablesDTO;
 import com.zzyycc.modules.generator.service.GeneratorService;
 import com.zzyycc.modules.utils.ZipUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author zhuyuechao
@@ -32,16 +38,19 @@ import java.io.File;
 public class GeneratorServiceImpl implements GeneratorService {
 
     @Value("${spring.datasource.username}")
-    private String username;
+    private static String DEFAULT_USERNAME;
     @Value("${spring.datasource.password}")
-    private String password;
+    private static String DEFAULT_PASSWORD;
     @Value("${spring.datasource.url}")
-    private String url;
+    private static String DEFAULT_URL;
 
     private final StringRedisTemplate stringRedisTemplate;
 
-    public GeneratorServiceImpl(StringRedisTemplate stringRedisTemplate) {
+    private final JdbcTemplate jdbcTemplate;
+
+    public GeneratorServiceImpl(StringRedisTemplate stringRedisTemplate, JdbcTemplate jdbcTemplate) {
         this.stringRedisTemplate = stringRedisTemplate;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -58,6 +67,52 @@ public class GeneratorServiceImpl implements GeneratorService {
         ZipUtil.toZip(response, new File(path));
     }
 
+    @Override
+    public Page<MgTablesDTO> tables(Page page, MgTablesDTO dto) {
+        Page<MgTablesDTO> resultPage = new Page<>();
+
+        String sql ="SELECT 'mysql' AS dbType, table_name AS tableName, ENGINE AS engine, table_comment AS tableComment, create_time AS createTime " +
+                "FROM information_schema.TABLES WHERE table_schema = ( SELECT DATABASE()) " ;
+
+        if (StringUtils.isNotEmpty(dto.getTableName())) {
+            sql += " and table_name like '%"+dto.getTableName()+"%' ";
+        }
+        sql += " order by create_time desc ";
+
+        // 分页查询
+        long current = page.getCurrent();
+        long size = page.getSize();
+        sql += " limit "+ (current-1)*size +", " + size ;
+
+        List<MgTablesDTO> resultList = this.jdbcTemplate.query(sql, (ResultSet rs) -> {
+            List<MgTablesDTO> tempList = new ArrayList<>();
+            while (rs.next()) {
+                MgTablesDTO result = new MgTablesDTO();
+                result.setDbType(rs.getString("dbType"));
+                result.setTableName(rs.getString("tableName"));
+                result.setTableComment(rs.getString("tableComment"));
+                result.setCreateTime(rs.getTimestamp("createTime").toLocalDateTime());
+                result.setEngine(rs.getString("engine"));
+                tempList.add(result);
+            }
+            return tempList;
+        });
+
+        // 查询总条数
+        String countSql ="SELECT count(1) FROM information_schema.TABLES WHERE table_schema = ( SELECT DATABASE())" ;
+        Integer count = this.jdbcTemplate.queryForObject(countSql, Integer.class);
+        if (null == count) {
+            count = 0;
+        }
+
+        resultPage.setCurrent(current);
+        resultPage.setSize(size);
+        resultPage.setPages(count%size==0 ? count/size : count/size +1);
+        resultPage.setRecords(resultList);
+        resultPage.setTotal(count);
+        return resultPage;
+    }
+
 
     private String getSystemPath() {
         return System.getProperty("os.name").toLowerCase().contains("windows") ? "D://AutoGenerator" : "/tmp/AutoGenerator";
@@ -65,7 +120,10 @@ public class GeneratorServiceImpl implements GeneratorService {
 
     private FastAutoGenerator fastAutoGenerator(MgGeneratorCodeDTO dto) {
         return FastAutoGenerator.create(
-                new DataSourceConfig.Builder(url, username, password)
+                new DataSourceConfig.Builder(
+                        null == dto.getUrl() ? DEFAULT_URL : dto.getUrl(),
+                        null == dto.getUsername() ? DEFAULT_USERNAME : dto.getUsername(),
+                        null == dto.getPassword() ? DEFAULT_PASSWORD : dto.getPassword())
                         .typeConvert(new MySqlTypeConvert()).keyWordsHandler(new MySqlKeyWordsHandler()))
                 .globalConfig(builder -> builder
                         .fileOverride()
