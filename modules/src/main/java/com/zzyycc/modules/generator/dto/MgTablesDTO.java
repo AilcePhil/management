@@ -3,7 +3,7 @@ package com.zzyycc.modules.generator.dto;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
  * @author zhuyuechao
@@ -28,7 +28,7 @@ public class MgTablesDTO implements Serializable {
     private String tableComment;
 
     @ApiModelProperty(value = "创建时间")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     public String getDbType() {
         return dbType;
@@ -54,11 +54,11 @@ public class MgTablesDTO implements Serializable {
         this.tableComment = tableComment;
     }
 
-    public LocalDateTime getCreateTime() {
+    public Date getCreateTime() {
         return createTime;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 

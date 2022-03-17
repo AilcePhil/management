@@ -8,10 +8,7 @@ import com.zzyycc.modules.generator.dto.MgTablesDTO;
 import com.zzyycc.modules.generator.service.GeneratorService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -50,8 +47,7 @@ public class GeneratorController {
 
     @ApiOperation(value = "获取表相关信息")
     @PostMapping("/tables")
-    public ResponseData<Page<MgTablesDTO>> tables(Page page, MgTablesDTO dto) {
-
+    public ResponseData<Page<MgTablesDTO>> tables(Page page, @RequestBody MgTablesDTO dto) {
         return ResponseData.success(generatorService.tables(page, dto));
     }
 

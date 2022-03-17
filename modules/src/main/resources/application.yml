@@ -19,9 +19,9 @@ spring:
 
 
 # 解决swagger3和springboot2.6.x路径解析问题
-  mvc:
-    pathmatch:
-      matching-strategy: ant_path_matcher
+#  mvc:
+#    pathmatch:
+#      matching-strategy: ant_path_matcher
 
 
   redis:

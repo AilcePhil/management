@@ -38,11 +38,11 @@ import java.util.List;
 public class GeneratorServiceImpl implements GeneratorService {
 
     @Value("${spring.datasource.username}")
-    private static String DEFAULT_USERNAME;
+    private String defaultUsername;
     @Value("${spring.datasource.password}")
-    private static String DEFAULT_PASSWORD;
+    private String defaultPassword;
     @Value("${spring.datasource.url}")
-    private static String DEFAULT_URL;
+    private String defaultUrl;
 
     private final StringRedisTemplate stringRedisTemplate;
 
@@ -56,7 +56,6 @@ public class GeneratorServiceImpl implements GeneratorService {
     @Override
     public void generatorCode(MgGeneratorCodeDTO dto) {
         fastAutoGenerator(dto).execute();
-
     }
 
     @Override
@@ -91,7 +90,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                 result.setDbType(rs.getString("dbType"));
                 result.setTableName(rs.getString("tableName"));
                 result.setTableComment(rs.getString("tableComment"));
-                result.setCreateTime(rs.getTimestamp("createTime").toLocalDateTime());
+                result.setCreateTime(rs.getTimestamp("createTime"));
                 result.setEngine(rs.getString("engine"));
                 tempList.add(result);
             }
@@ -113,17 +112,17 @@ public class GeneratorServiceImpl implements GeneratorService {
         return resultPage;
     }
 
-
     private String getSystemPath() {
         return System.getProperty("os.name").toLowerCase().contains("windows") ? "D://AutoGenerator" : "/tmp/AutoGenerator";
     }
 
     private FastAutoGenerator fastAutoGenerator(MgGeneratorCodeDTO dto) {
+        deleteFile(new File(getSystemPath()));
         return FastAutoGenerator.create(
                 new DataSourceConfig.Builder(
-                        null == dto.getUrl() ? DEFAULT_URL : dto.getUrl(),
-                        null == dto.getUsername() ? DEFAULT_USERNAME : dto.getUsername(),
-                        null == dto.getPassword() ? DEFAULT_PASSWORD : dto.getPassword())
+                        null == dto.getUrl() ? defaultUrl : dto.getUrl(),
+                        null == dto.getUsername() ? defaultUsername : dto.getUsername(),
+                        null == dto.getPassword() ? defaultPassword : dto.getPassword())
                         .typeConvert(new MySqlTypeConvert()).keyWordsHandler(new MySqlKeyWordsHandler()))
                 .globalConfig(builder -> builder
                         .fileOverride()
@@ -131,7 +130,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                         .outputDir(getSystemPath())
                         .author(StringUtils.isNotEmpty(dto.getAuthor()) ? dto.getAuthor() : "zyc")
                         .enableSwagger()
-                        .dateType(DateType.TIME_PACK).commentDate("yyyy-MM-dd HH:mm:ss")
+                        .dateType(DateType.ONLY_DATE)
                         .build())
                 .packageConfig(builder -> builder
                         .parent(StringUtils.isNotEmpty(dto.getParent()) ? dto.getParent() : "com.zzyycc")
@@ -173,5 +172,30 @@ public class GeneratorServiceImpl implements GeneratorService {
                         .mapperBuilder().superClass(BaseMapper.class).enableMapperAnnotation().enableBaseResultMap()
                         .enableBaseColumnList()
                 .build());
+    }
+
+    private void deleteFile(File file) {
+        //判断文件不为null或文件目录存在
+        if (file == null || !file.exists()){
+            return;
+        }
+        //取得这个目录下的所有子文件对象
+        File[] files = file.listFiles();
+        //遍历该目录下的文件对象
+        if (null != files) {
+            for (File f: files){
+                //打印文件名
+                String name = file.getName();
+                System.out.println(name);
+                //判断子目录是否存在子目录,如果是文件则删除
+                if (f.isDirectory()){
+                    deleteFile(f);
+                }else {
+                    f.delete();
+                }
+            }
+        }
+        //删除空文件夹  for循环已经把上一层节点的目录清空。
+        file.delete();
     }
 }

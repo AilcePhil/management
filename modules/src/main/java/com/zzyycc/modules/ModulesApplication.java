@@ -12,9 +12,9 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
  * @createTime 2022/2/22 14:13
  * @description
  */
+@EnableMgSwagger3
 @SpringBootApplication
 @EnableEurekaClient
-@EnableMgSwagger3
 public class ModulesApplication {
 
     public static void main(String[] args) {

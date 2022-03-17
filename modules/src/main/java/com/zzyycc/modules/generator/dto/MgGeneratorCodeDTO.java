@@ -27,17 +27,16 @@ public class MgGeneratorCodeDTO implements Serializable {
     @ApiModelProperty(value = "数据库名称")
     private String databaseName;
 
-    @ApiModelProperty(name = "表名列表")
+    @ApiModelProperty(value = "表名列表")
     private List<String> tableNameList;
 
-
-    @ApiModelProperty(name = "作者名")
+    @ApiModelProperty(value = "作者名")
     private String author;
 
-    @ApiModelProperty(name = "父包名")
+    @ApiModelProperty(value = "父包名")
     private String parent;
 
-    @ApiModelProperty(name = "模块名")
+    @ApiModelProperty(value = "模块名")
     private String moduleName;
 
     public String getUrl() {
