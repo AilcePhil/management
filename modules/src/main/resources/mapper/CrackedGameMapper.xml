@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zzyycc.modules.game.mapper.CrackedGameMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zzyycc.modules.game.entity.CrackedGame">
+        <id column="id" property="id" />
+        <result column="code" property="code" />
+        <result column="activation_code" property="activationCode" />
+        <result column="name" property="name" />
+        <result column="tian_yi" property="tianYi" />
+        <result column="bai_du" property="baiDu" />
+        <result column="present" property="present" />
+        <result column="create_time" property="createTime" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, `code`, activation_code, `name`, tian_yi, bai_du, present, create_time
+    </sql>
+
+</mapper>
